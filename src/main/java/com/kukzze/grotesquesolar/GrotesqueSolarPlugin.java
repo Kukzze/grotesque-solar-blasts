@@ -37,7 +37,6 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.Text;
 
 @Slf4j
@@ -72,12 +71,6 @@ public class GrotesqueSolarPlugin extends Plugin
 	private ClientThread clientThread;
 
 	@Inject
-	private OverlayManager overlayManager;
-
-	@Inject
-	private GrotesqueSolarOverlay overlay;
-
-	@Inject
 	private GrotesqueSolarConfig config;
 
 	@Inject
@@ -98,13 +91,11 @@ public class GrotesqueSolarPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		overlayManager.add(overlay);
 	}
 
 	@Override
 	protected void shutDown()
 	{
-		overlayManager.remove(overlay);
 		clientThread.invoke(this::clearActiveBlasts);
 	}
 

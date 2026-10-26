@@ -28,13 +28,6 @@ public class SolarBlast
 		this.despawned = false;
 	}
 
-	public int getRemainingTicks(int currentCycle)
-	{
-		int remainingCycles = Math.max(0, endCycle - currentCycle);
-		// Each server tick is approximately 30 client cycles (600ms / 20ms)
-		return (int) Math.ceil(remainingCycles / 30.0);
-	}
-
 	public float getProgress(int currentCycle)
 	{
 		int total = endCycle - startCycle;

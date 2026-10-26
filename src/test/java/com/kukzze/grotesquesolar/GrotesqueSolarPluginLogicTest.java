@@ -12,7 +12,6 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.GraphicsObjectCreated;
 import net.runelite.api.events.ProjectileMoved;
 import net.runelite.client.callback.ClientThread;
-import net.runelite.client.ui.overlay.OverlayManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,12 +32,6 @@ class GrotesqueSolarPluginLogicTest
 	private ClientThread clientThread;
 
 	@Mock
-	private OverlayManager overlayManager;
-
-	@Mock
-	private GrotesqueSolarOverlay overlay;
-
-	@Mock
 	private GrotesqueSolarConfig config;
 
 	private GrotesqueSolarPlugin plugin;
@@ -50,8 +43,6 @@ class GrotesqueSolarPluginLogicTest
 
 		setField(plugin, "client", client);
 		setField(plugin, "clientThread", clientThread);
-		setField(plugin, "overlayManager", overlayManager);
-		setField(plugin, "overlay", overlay);
 		setField(plugin, "config", config);
 
 		lenient().when(config.hideOriginalRock()).thenReturn(true);
