@@ -24,6 +24,14 @@ public interface GrotesqueSolarConfig extends Config
 	)
 	String reticleSection = "reticleSection";
 
+	@ConfigSection(
+		name = "Discord Notifications",
+		description = "Send kill notifications to a Discord channel",
+		position = 2,
+		closedByDefault = true
+	)
+	String discordSection = "discordSection";
+
 	@ConfigItem(
 		keyName = "hideOriginalRock",
 		name = "Hide Falling Rocks",
@@ -108,5 +116,41 @@ public interface GrotesqueSolarConfig extends Config
 	default Color reticleFillColor()
 	{
 		return new Color(255, 170, 0, 35);
+	}
+
+	@ConfigItem(
+		keyName = "discordWebhook",
+		name = "Webhook URL",
+		description = "Discord channel webhook URL.",
+		position = 0,
+		section = discordSection
+	)
+	default String discordWebhook()
+	{
+		return "";
+	}
+
+	@ConfigItem(
+		keyName = "notifyOnKill",
+		name = "Notify on Kill",
+		description = "Posts an embed whenever Grotesque Guardians is defeated.",
+		position = 1,
+		section = discordSection
+	)
+	default boolean notifyOnKill()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		keyName = "sendPersonalBest",
+		name = "Notify on PB",
+		description = "Highlights new personal best kill times in Discord.",
+		position = 2,
+		section = discordSection
+	)
+	default boolean sendPersonalBest()
+	{
+		return true;
 	}
 }

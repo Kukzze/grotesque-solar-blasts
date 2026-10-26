@@ -8,11 +8,14 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Animation;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.GraphicsObject;
@@ -23,6 +26,7 @@ import net.runelite.api.Projectile;
 import net.runelite.api.RuneLiteObject;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.GraphicsObjectCreated;
@@ -34,6 +38,7 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.util.Text;
 
 @Slf4j
 @Singleton
@@ -46,6 +51,10 @@ public class GrotesqueSolarPlugin extends Plugin
 {
 	private static final int DUSK_FALLING_ROCK_PROJECTILE = 1435;
 	private static final int BEAM_MODEL_ID = 43330;
+
+	private static final Pattern GG_KC_PATTERN = Pattern.compile("Your Grotesque Guardians kill count is: ([0-9,]+)\\.");
+	private static final Pattern PB_PATTERN = Pattern.compile("Fight duration: ([0-9:]+(?:\\.[0-9]+)?)\\. \\(new personal best\\)");
+	private static final Pattern DURATION_PATTERN = Pattern.compile("Fight duration: ([0-9:]+(?:\\.[0-9]+)?)");
 
 	private static final Set<Integer> ROCK_SHADOW_SPOTANIMS = ImmutableSet.of(
 		1446, 1447, 1448, 1449,
@@ -70,6 +79,12 @@ public class GrotesqueSolarPlugin extends Plugin
 
 	@Inject
 	private GrotesqueSolarConfig config;
+
+	@Inject
+	private DiscordWebhookService discordWebhookService;
+
+	private String lastDuration;
+	private boolean lastWasPb;
 
 	@Getter
 	private final List<SolarBlast> activeBlasts = Collections.synchronizedList(new ArrayList<>());
@@ -99,6 +114,50 @@ public class GrotesqueSolarPlugin extends Plugin
 		if (event.getGameState() != GameState.LOGGED_IN)
 		{
 			clearActiveBlasts();
+			lastDuration = null;
+			lastWasPb = false;
+		}
+	}
+
+	@Subscribe
+	public void onChatMessage(ChatMessage event)
+	{
+		if (event.getType() != ChatMessageType.GAMEMESSAGE && event.getType() != ChatMessageType.SPAM)
+		{
+			return;
+		}
+
+		String message = Text.removeTags(event.getMessage());
+
+		Matcher pbMatcher = PB_PATTERN.matcher(message);
+		if (pbMatcher.find())
+		{
+			lastDuration = pbMatcher.group(1);
+			lastWasPb = true;
+		}
+		else
+		{
+			Matcher durMatcher = DURATION_PATTERN.matcher(message);
+			if (durMatcher.find())
+			{
+				lastDuration = durMatcher.group(1);
+				lastWasPb = false;
+			}
+		}
+
+		Matcher kcMatcher = GG_KC_PATTERN.matcher(message);
+		if (kcMatcher.find())
+		{
+			String killCount = kcMatcher.group(1);
+			if (config.notifyOnKill())
+			{
+				String playerName = client.getLocalPlayer() != null && client.getLocalPlayer().getName() != null
+					? client.getLocalPlayer().getName()
+					: "Player";
+				discordWebhookService.sendKillNotification(playerName, killCount, lastDuration, lastWasPb);
+			}
+			lastDuration = null;
+			lastWasPb = false;
 		}
 	}
 

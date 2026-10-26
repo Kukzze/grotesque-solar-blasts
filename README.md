@@ -20,6 +20,7 @@ Dusk's rockfall phase has always looked dated and muddy. This plugin swaps out t
 - **Sunfire Ground Reticles**: Draws a clean targeting reticle on tiles where beams will strike.
 - **Impact Countdown**: Optional tick counter displaying the time remaining until each beam lands.
 - **Customizable Styles**: Choose between **Sunfire Lightning**, **Crystal Beam**, or **Solar Pillar** animations, with adjustable beam tints and reticle colors.
+- **Discord Webhook Integration**: Optionally send Grotesque Guardians kill milestones and Personal Best times directly to your Discord server.
 - **100% Client-Side**: Strictly visual transmog conforming to Jagex third-party client guidelines.
 
 ---
@@ -35,6 +36,9 @@ Dusk's rockfall phase has always looked dated and muddy. This plugin swaps out t
 | **Show Impact Timer** | Checkbox | `true` | Displays remaining server ticks until the beam hits |
 | **Reticle Color** | Color Picker | Orange (`#FF8C00`) | Border color for the ground target indicator |
 | **Reticle Fill Color**| Color Picker | Amber (`#FFAA00`) | Fill opacity for the target indicator |
+| **Discord Webhook URL** | Text Field | Empty | Webhook URL for posting kill logs to Discord |
+| **Notify on Kill** | Checkbox | `false` | Sends an embed when defeating Grotesque Guardians |
+| **Notify on PB** | Checkbox | `true` | Highlights new personal best times in Discord |
 
 ---
 
